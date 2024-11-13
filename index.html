@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy POS</title>
+</head>
+<body>
+    <h1>Easy POS</h1>
+    <label for="food-item">Enter Food Item:</label>
+    <input type="text" id="food-item">
+    <button onclick="addFoodItem()">Add Item</button>
+    <button onclick="saveOrder()">Save Order</button>
+
+    <h3>Order Items:</h3>
+    <ul id="order-list"></ul>
+    <p id="status"></p>
+
+    <script>
+        let orderItems = [];
+
+        function addFoodItem() {
+            const item = document.getElementById('food-item').value;
+            if (item) {
+                orderItems.push(item);
+                const listItem = document.createElement('li');
+                listItem.textContent = item;
+                document.getElementById('order-list').appendChild(listItem);
+                document.getElementById('food-item').value = '';
+            }
+        }
+
+        function saveOrder() {
+            fetch('/save_order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: orderItems })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('status').textContent = `Saved food as order #${data.order_number}`;
+                orderItems = [];
+                document.getElementById('order-list').innerHTML = '';
+            });
+        }
+    </script>
+</body>
+</html>
